@@ -97,7 +97,7 @@ export const CheckoutPage: React.FC = () => {
 
             if (response && response.razorpay_order_id) {
               setPaymentDetails(verifyResponse?.data?.payment || null);
-              toast.success('Payment completed!');
+              // toast.success('Payment completed!');
               setState('LOADING');
               setLoadingMessage('Redirecting to merchant...');
 
@@ -233,7 +233,7 @@ export const CheckoutPage: React.FC = () => {
             if (data.order_id) {
               setDecryptedOrderId(data.order_id);
             }
-            toast.success('Customer details pre-filled successfully!');
+            // toast.success('Customer details pre-filled successfully!');
 
             // Auto open the Razorpay payment gateway immediately
             await handlePaymentSubmit(data);
@@ -262,37 +262,15 @@ export const CheckoutPage: React.FC = () => {
     <Layout>
       {state === 'LOADING' && <Loader message={loadingMessage} />}
 
-      {(state === 'FORM' || state === 'LOADING') && (
-        !hasCode ? (
-          <div className="w-full max-w-md glass-panel rounded-2xl p-8 text-center animate-scale-in glow-indigo">
-            <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/30 rounded-full flex items-center justify-center text-indigo-400 text-xl mx-auto mb-4">
-              🔗
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Secure Payment Gateway</h3>
-            <p className="text-xs text-slate-400 mb-6">
-              This is a secure direct checkout portal. To make a payment, please use a shareable prefilled payment link.
-            </p>
-            <button
-              onClick={() => {
-                navigate('/generate');
-              }}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
-            >
-              Go to Link Generator
-            </button>
-          </div>
-        ) : (
-          <div className="w-full max-w-md glass-panel rounded-2xl p-8 text-center animate-scale-in glow-indigo">
-            <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/30 rounded-full flex items-center justify-center text-indigo-400 text-xl mx-auto mb-4 animate-pulse">
-              🔒
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Secure Checkout Session</h3>
-            <p className="text-xs text-slate-400">
-              Connecting to Razorpay gateway. Please complete the transaction in the popup window.
-            </p>
-          </div>
-        )
-      )}
+      <div className="w-full max-w-md glass-panel rounded-2xl p-8 text-center animate-scale-in glow-indigo">
+        <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/30 rounded-full flex items-center justify-center text-indigo-400 text-xl mx-auto mb-4 animate-pulse">
+          🔒
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">Secure Checkout Session</h3>
+        <p className="text-xs text-slate-400">
+          Connecting to Razorpay gateway. Please complete the transaction in the popup window.
+        </p>
+      </div>
 
       {state === 'SUCCESS' && paymentDetails && (
         <SuccessView payment={paymentDetails} onReset={handleReset} />
