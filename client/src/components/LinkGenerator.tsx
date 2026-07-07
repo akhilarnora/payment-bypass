@@ -14,6 +14,7 @@ export const LinkGenerator: React.FC<LinkGeneratorProps> = ({ isLoading, setIsLo
     customerPhone: '',
     amount: '',
     tokenKey: '',
+    order_id: '',
   });
 
   const [generatedLink, setGeneratedLink] = useState('');
@@ -203,6 +204,21 @@ export const LinkGenerator: React.FC<LinkGeneratorProps> = ({ isLoading, setIsLo
             value={formData.tokenKey}
             onChange={handleChange}
             placeholder="e.g. INV-10024"
+            disabled={isLoading}
+            className="w-full px-4 py-2.5 rounded-lg glass-input text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+            Order ID (Optional)
+          </label>
+          <input
+            type="text"
+            name="order_id"
+            value={formData.order_id}
+            onChange={handleChange}
+            placeholder="e.g. ORD-98765"
             disabled={isLoading}
             className="w-full px-4 py-2.5 rounded-lg glass-input text-sm"
           />

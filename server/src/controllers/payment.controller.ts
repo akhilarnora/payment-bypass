@@ -249,7 +249,7 @@ export const encryptPayload = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { customerName, customerEmail, customerPhone, amount, tokenKey } = req.body;
+    const { customerName, customerEmail, customerPhone, amount, tokenKey, order_id, orderId } = req.body;
 
     // Simple validations
     if (!customerName || !customerEmail || !customerPhone || !amount) {
@@ -265,6 +265,7 @@ export const encryptPayload = async (
       customerPhone: customerPhone.trim(),
       amount: String(amount),
       tokenKey: tokenKey ? String(tokenKey).trim() : '',
+      order_id: (order_id || orderId || '').toString().trim(),
     };
 
     const tokenCode = encryptData(JSON.stringify(payloadObj));

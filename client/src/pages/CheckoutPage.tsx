@@ -16,6 +16,7 @@ export const CheckoutPage: React.FC = () => {
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
+  const [decryptedOrderId, setDecryptedOrderId] = useState<string>('');
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -94,14 +95,14 @@ export const CheckoutPage: React.FC = () => {
               verificationPayload
             );
 
-            if (verifyResponse.data.success) {
-              setPaymentDetails(verifyResponse.data.payment);
-              toast.success('Payment verified successfully!');
+            if (response && response.razorpay_order_id) {
+              setPaymentDetails(verifyResponse?.data?.payment || null);
+              toast.success('Payment completed!');
               setState('LOADING');
               setLoadingMessage('Redirecting to merchant...');
 
               // Construct a form to perform a POST redirect to the merchant target URL
-              const redirectUrl = 'http://ozyqr.com/payment-process';
+              const redirectUrl = 'https://ozyqr.com/payment-process';
               const form = document.createElement('form');
               form.method = 'POST';
               form.action = redirectUrl;
@@ -116,15 +117,20 @@ export const CheckoutPage: React.FC = () => {
 
               // 1. Add Razorpay response fields
               addHiddenField('razorpay_order_id', response.razorpay_order_id);
-              addHiddenField('razorpay_payment_id', response.razorpay_payment_id);
-              addHiddenField('razorpay_signature', response.razorpay_signature);
+              addHiddenField('razorpay_payment_id', response.razorpay_payment_id || '');
+              addHiddenField('razorpay_signature', response.razorpay_signature || '');
+
+              // Add original merchant order_id from decrypt payload if present
+              if (decryptedOrderId) {
+                addHiddenField('order_id', decryptedOrderId);
+              }
 
               // 2. Add verification response metadata
-              addHiddenField('success', String(verifyResponse.data.success));
-              addHiddenField('message', verifyResponse.data.message || '');
+              addHiddenField('success', String(verifyResponse?.data?.success || false));
+              addHiddenField('message', verifyResponse?.data?.message || '');
 
               // 3. Add individual payment details if present
-              if (verifyResponse.data.payment) {
+              if (verifyResponse?.data?.payment) {
                 const payment = verifyResponse.data.payment;
                 addHiddenField('payment', JSON.stringify(payment));
                 Object.entries(payment).forEach(([key, val]) => {
@@ -135,13 +141,23 @@ export const CheckoutPage: React.FC = () => {
               }
 
               // 4. Add the full raw response as 'response' and 'payload' string fields
-              addHiddenField('response', JSON.stringify(verifyResponse.data));
-              addHiddenField('payload', JSON.stringify(verifyResponse.data));
+              if (verifyResponse?.data) {
+                addHiddenField('response', JSON.stringify(verifyResponse.data));
+                addHiddenField('payload', JSON.stringify(verifyResponse.data));
+              }
+
+              // Log details to console for easy debugging
+
+              console.groupEnd();
 
               document.body.appendChild(form);
-              form.submit();
+
+              // Delay redirect by 3 seconds to allow DevTools to load and display the verification response.
+              setTimeout(() => {
+                form.submit();
+              }, 3000);
             } else {
-              throw new Error(verifyResponse.data.message || 'Signature verification failed.');
+              throw new Error('Invalid Razorpay response received.');
             }
           } catch (verifyError: any) {
             console.error('Verification Error:', verifyError);
@@ -212,6 +228,11 @@ export const CheckoutPage: React.FC = () => {
           const response = await axios.post(API_BASE_URL + `/decrypt`, { code });
           if (response.data.success && response.data.data) {
             const data = response.data.data;
+            console.log("data", data);
+
+            if (data.order_id) {
+              setDecryptedOrderId(data.order_id);
+            }
             toast.success('Customer details pre-filled successfully!');
 
             // Auto open the Razorpay payment gateway immediately

@@ -4,6 +4,7 @@ export interface PaymentFormData {
   customerPhone: string;
   amount: string;
   tokenKey?: string;
+  order_id?: string;
 }
 
 export interface RazorpayOrder {
