@@ -12,6 +12,7 @@ export interface IPayment extends Document {
   customerPhone: string;
   status: 'created' | 'captured' | 'failed';
   tokenKey?: string;
+  order_id?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +34,10 @@ const PaymentSchema = new Schema<IPayment>(
       default: '',
     },
     tokenKey: {
+      type: String,
+      default: '',
+    },
+    order_id: {
       type: String,
       default: '',
     },

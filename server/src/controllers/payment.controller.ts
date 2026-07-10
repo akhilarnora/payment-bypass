@@ -27,7 +27,7 @@ export const createOrder = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { amount, customerName, customerEmail, customerPhone, tokenKey } = req.body;
+    const { amount, customerName, customerEmail, customerPhone, tokenKey, order_id, orderId } = req.body;
 
     // 1. Validation
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -69,6 +69,7 @@ export const createOrder = async (
       customerPhone,
       status: 'created',
       tokenKey: tokenKey || '',
+      order_id: (order_id || orderId || '').toString().trim(),
     });
 
     await payment.save();
@@ -83,6 +84,7 @@ export const createOrder = async (
         receipt: razorpayOrder.receipt,
       },
       key: process.env.RAZORPAY_KEY_ID || '',
+      order_id: payment.order_id || '',
     });
   } catch (error) {
     next(error);

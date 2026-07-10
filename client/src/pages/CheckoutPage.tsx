@@ -49,6 +49,7 @@ export const CheckoutPage: React.FC = () => {
         customerEmail: formData.customerEmail,
         customerPhone: formData.customerPhone,
         tokenKey: formData.tokenKey,
+        order_id: formData.order_id || decryptedOrderId,
       };
 
       const orderResponse = await axios.post<CreateOrderResponse>(
@@ -121,8 +122,9 @@ export const CheckoutPage: React.FC = () => {
               addHiddenField('razorpay_signature', response.razorpay_signature || '');
 
               // Add original merchant order_id from decrypt payload if present
-              if (decryptedOrderId) {
-                addHiddenField('order_id', decryptedOrderId);
+              const finalMerchantOrderId = verifyResponse?.data?.payment?.order_id || '';
+              if (finalMerchantOrderId) {
+                addHiddenField('transation_id', finalMerchantOrderId);
               }
 
               // 2. Add verification response metadata

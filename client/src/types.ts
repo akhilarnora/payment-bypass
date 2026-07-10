@@ -18,6 +18,7 @@ export interface CreateOrderResponse {
   success: boolean;
   order: RazorpayOrder;
   key: string;
+  order_id?: string;
 }
 
 export interface PaymentDetails {
@@ -33,6 +34,7 @@ export interface PaymentDetails {
   customerPhone: string;
   status: 'created' | 'captured' | 'failed';
   tokenKey?: string;
+  order_id?: string;
   createdAt: string;
   updatedAt: string;
 }
