@@ -124,7 +124,7 @@ export const CheckoutPage: React.FC = () => {
               // Add original merchant order_id from decrypt payload if present
               const finalMerchantOrderId = verifyResponse?.data?.payment?.order_id || '';
               if (finalMerchantOrderId) {
-                addHiddenField('transation_id', finalMerchantOrderId);
+                addHiddenField('transaction_id', finalMerchantOrderId);
               }
 
               // 2. Add verification response metadata
